@@ -1,5 +1,5 @@
 [README.md](https://github.com/user-attachments/files/35264050/README.md)
-# price_tracker# Price Tracker — Ozon, Wildberries, Золотое яблоко, Летуаль
+# price_tracker# Price Tracker — Ozon, Wildberries, Золотое яблоко, Летуаль AI_deepseek
 
 Расширение для Chromium-браузеров (Google Chrome, Opera), которое следит за историей цен на товары в четырёх магазинах: показывает минимум и максимум, строит график, уведомляет о снижении и достижении целевой цены. Для косметики дополнительно разбирает состав (INCI) и отмечает потенциальные аллергены и раздражители.
 
