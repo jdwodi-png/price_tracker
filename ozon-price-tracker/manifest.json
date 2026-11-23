@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "Price Tracker — Ozon, WB, Золотое яблоко, Летуаль",
+  "short_name": "Price Tracker",
+  "version": "2.2.0",
+  "description": "История цен, минимумы, уведомления и разбор состава косметики в Ozon, Wildberries, Золотом яблоке и Летуаль.",
+  "minimum_chrome_version": "102",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "alarms",
+    "notifications",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.ozon.ru/*",
+    "*://ozon.ru/*",
+    "*://*.wildberries.ru/*",
+    "*://wildberries.ru/*",
+    "*://*.goldapple.ru/*",
+    "*://goldapple.ru/*",
+    "*://*.letu.ru/*",
+    "*://letu.ru/*",
+    "*://card.wb.ru/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Price Tracker",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "options_ui": {
+    "page": "src/dashboard.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.ozon.ru/*",
+        "*://ozon.ru/*",
+        "*://*.wildberries.ru/*",
+        "*://wildberries.ru/*",
+        "*://*.goldapple.ru/*",
+        "*://goldapple.ru/*",
+        "*://*.letu.ru/*",
+        "*://letu.ru/*"
+      ],
+      "js": [
+        "src/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
