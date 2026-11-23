@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Price Tracker — панель цен</title>
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="side-head">
+          <img src="../icons/icon48.png" alt="" width="36" height="36" />
+          <div>
+            <div class="brand-name">Price Tracker</div>
+            <div class="brand-sub">панель истории цен</div>
+          </div>
+        </div>
+
+        <div class="side-actions">
+          <button id="refreshAllBtn" class="btn primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 11.5A8.5 8.5 0 1 0 12 20" />
+              <path d="M20 4.5v6.5h-6.5" />
+            </svg>
+            Обновить все
+          </button>
+          <button id="settingsBtn" class="btn ghost" title="Настройки">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h9" /><path d="M17 7h3" /><path d="M4 17h3" /><path d="M11 17h9" />
+              <circle cx="15" cy="7" r="2.2" /><circle cx="9" cy="17" r="2.2" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="M16 16l4 4" />
+          </svg>
+          <input id="searchInput" type="search" placeholder="Поиск по избранному" autocomplete="off" />
+        </div>
+
+        <div class="add-row">
+          <input id="addUrlInput" type="text" placeholder="Ссылка: Ozon, WB, ЗЯ, Летуаль" spellcheck="false" autocomplete="off" />
+          <button id="addUrlBtn" class="add-btn" title="Добавить по ссылке">+</button>
+        </div>
+
+        <div class="list-label">
+          <span>Избранное</span>
+          <span id="itemCount" class="pill">0</span>
+        </div>
+
+        <nav id="itemList" class="item-list"></nav>
+
+        <div class="side-foot">
+          <div id="sideStatus" class="muted">—</div>
+          <div class="side-links">
+            <button id="exportBtn" class="link">Экспорт</button>
+            <button id="importBtn" class="link">Импорт</button>
+            <input id="importFile" type="file" accept=".json,application/json" hidden />
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div id="banner" class="banner" hidden>
+          <div class="banner-icon">₽</div>
+          <div class="banner-text">
+            <b>Как это работает</b>
+            <span>Откройте карточку товара в Ozon, Wildberries, Золотом яблоке или Летуаль и нажмите «Отслеживать цену» на плашке расширения. Цена будет проверяться автоматически, а история — копиться здесь.</span>
+          </div>
+          <button id="bannerClose" class="banner-close" title="Скрыть">×</button>
+        </div>
+
+        <section id="detail" class="detail" hidden>
+          <header class="detail-head">
+            <div class="hero-wrap">
+              <img id="heroImg" class="hero" alt="" />
+              <div id="heroFallback" class="hero-fallback">₽</div>
+            </div>
+            <div class="detail-info">
+              <div class="chips">
+                <span id="storeChip" class="chip muted-chip" hidden>—</span>
+                <span id="statusChip" class="chip">—</span>
+                <span id="sourceChip" class="chip muted-chip">—</span>
+              </div>
+              <h1 id="detailTitle">Товар</h1>
+              <div class="big-price-row">
+                <span id="bigPrice" class="big-price">—</span>
+                <span id="bigChange" class="big-change" hidden></span>
+                <span id="targetHitChip" class="chip good" hidden>цель достигнута</span>
+              </div>
+              <div class="detail-actions">
+                <a id="openOzon" class="btn primary" href="https://www.ozon.ru/" target="_blank" rel="noopener noreferrer">Открыть товар ↗</a>
+                <button id="checkNowBtn" class="btn ghost">Проверить сейчас</button>
+                <button id="deleteBtn" class="btn danger-ghost">Удалить</button>
+              </div>
+              <div id="errorNote" class="error-note" hidden></div>
+            </div>
+          </header>
+
+          <div class="card chart-card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Динамика цены</div>
+                <div id="chartSub" class="muted">—</div>
+              </div>
+              <div id="rangeButtons" class="ranges">
+                <button data-range="7">7 дн</button>
+                <button data-range="30" class="active">30 дн</button>
+                <button data-range="90">90 дн</button>
+                <button data-range="365">год</button>
+                <button data-range="all">всё</button>
+              </div>
+            </div>
+            <div id="chartWrap" class="chart-wrap">
+              <canvas id="chartCanvas"></canvas>
+              <div id="chartTip" class="chart-tip" hidden></div>
+              <div id="chartEmpty" class="chart-empty" hidden>
+                История появится после нескольких проверок цены. Можно также нажать «Проверить сейчас».
+              </div>
+            </div>
+          </div>
+
+          <div id="statsGrid" class="stats-grid"></div>
+
+          <div class="card inci-card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Состав</div>
+                <div id="inciSub" class="muted">—</div>
+              </div>
+              <span id="inciVerdict" class="chip" hidden>—</span>
+            </div>
+            <div id="inciBody" class="inci-body"></div>
+          </div>
+
+          <div class="lower-grid">
+            <div class="card target-card">
+              <div class="card-title">Целевая цена</div>
+              <p class="muted small">Уведомим, когда товар подешевеет до этой отметки.</p>
+              <div class="target-row">
+                <input id="targetInput" type="number" min="1" step="1" placeholder="Например, 19 990" />
+                <button id="saveTargetBtn" class="btn primary">Сохранить</button>
+                <button id="clearTargetBtn" class="btn ghost">Сбросить</button>
+              </div>
+              <div id="targetProgress" class="target-progress" hidden>
+                <div class="bar"><div id="targetBar"></div></div>
+                <div id="targetHint" class="muted"></div>
+              </div>
+            </div>
+
+            <div class="card info-card">
+              <div class="card-title">О товаре</div>
+              <div class="info-row"><span>Добавлен</span><b id="infoAdded">—</b></div>
+              <div class="info-row"><span>Последняя проверка</span><b id="infoChecked">—</b></div>
+              <div class="info-row"><span>Точек истории</span><b id="infoPoints">—</b></div>
+              <div class="info-row"><span>Источник</span><b id="infoSource">—</b></div>
+              <div class="info-row"><span>Артикул</span><b id="infoSku">—</b></div>
+              <div class="info-actions">
+                <button id="clearHistoryBtn" class="link">Очистить историю</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="empty" class="empty-page">
+          <div class="empty-art">
+            <svg viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 74V16" stroke="rgba(126,166,255,.35)" />
+              <path d="M16 74h88" stroke="rgba(126,166,255,.35)" />
+              <path d="M26 58l18-20 15 12 26-28" stroke="#2ee6a8" stroke-width="3" />
+              <circle cx="85" cy="22" r="3" fill="#2ee6a8" stroke="none" />
+              <path d="M26 58l0 16M44 38v36M59 50v24M85 22v52" stroke="rgba(0,91,255,.35)" stroke-dasharray="2 5" />
+            </svg>
+          </div>
+          <h1>Начните следить за ценами</h1>
+          <p>Добавляйте товары из Ozon, Wildberries, Золотого яблока и Летуаль и смотрите, как менялась цена: минимумы, максимумы и средняя стоимость за период.</p>
+          <div class="steps">
+            <div class="step"><span>1</span><div><b>Откройте товар</b><small>Карточка в Ozon, WB, Золотом яблоке или Летуаль</small></div></div>
+            <div class="step"><span>2</span><div><b>Нажмите «Отслеживать»</b><small>На плашке расширения в углу страницы</small></div></div>
+            <div class="step"><span>3</span><div><b>Следите за динамикой</b><small>График и уведомления о снижении</small></div></div>
+          </div>
+          <button id="emptyOzonBtn" class="btn primary">Открыть Ozon</button>
+        </section>
+      </main>
+    </div>
+
+    <div id="settingsModal" class="modal-backdrop" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-head">
+          <h2 id="settingsTitle">Настройки</h2>
+          <button id="closeSettings" class="icon-close" title="Закрыть">×</button>
+        </div>
+
+        <div class="modal-body">
+          <label class="field">
+            <span>Проверять цены</span>
+            <select id="setInterval"></select>
+          </label>
+
+          <label class="check">
+            <input id="setNotify" type="checkbox" />
+            <span><b>Уведомлять о снижении</b><small>Всплывающее уведомление браузера при падении цены.</small></span>
+          </label>
+
+          <label class="field">
+            <span>Минимальное снижение для уведомления</span>
+            <div class="input-suffix">
+              <input id="setPercent" type="number" min="0.5" max="90" step="0.5" />
+              <span>%</span>
+            </div>
+          </label>
+
+          <label class="check">
+            <input id="setTargetNotify" type="checkbox" />
+            <span><b>Уведомлять о достижении цели</b><small>Даже если снижение меньше указанного порога.</small></span>
+          </label>
+
+          <label class="check">
+            <input id="setTabFallback" type="checkbox" />
+            <span>
+              <b>Обновлять через вкладку</b>
+              <small>Для Wildberries, Золотого яблока и Летуаль расширение открывает карточку в неактивной вкладке и читает цену со страницы. Для Ozon это запасной путь при блокировке. Заметнее, но надёжнее.</small>
+            </span>
+          </label>
+
+          <label class="field">
+            <span>Хранить точек истории на товар</span>
+            <select id="setLimit">
+              <option value="1000">1 000</option>
+              <option value="4000">4 000</option>
+              <option value="10000">10 000</option>
+            </select>
+          </label>
+
+          <div class="modal-danger">
+            <div><b>Опасная зона</b><small>Удалить все товары и всю историю цен.</small></div>
+            <button id="clearAllBtn" class="btn danger">Очистить всё</button>
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button id="cancelSettings" class="btn ghost">Отмена</button>
+          <button id="saveSettingsBtn" class="btn primary">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+    <script type="module" src="dashboard.js"></script>
+  </body>
+</html>

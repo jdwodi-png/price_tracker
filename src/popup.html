@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Price Tracker</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="head">
+        <div class="brand">
+          <img src="../icons/icon48.png" alt="" width="32" height="32" />
+          <div class="brand-text">
+            <div class="brand-name">Price Tracker</div>
+            <div class="brand-sub" id="subtitle">история цен</div>
+          </div>
+        </div>
+        <div class="head-actions">
+          <button class="icon-btn" id="refreshBtn" title="Обновить все цены" aria-label="Обновить все цены">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 11.5A8.5 8.5 0 1 0 12 20" />
+              <path d="M20 4.5v6.5h-6.5" />
+            </svg>
+          </button>
+          <button class="icon-btn" id="dashboardBtn" title="Панель истории" aria-label="Панель истории">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3.5" y="3.5" width="7" height="7" rx="1.6" />
+              <rect x="13.5" y="3.5" width="7" height="4.5" rx="1.6" />
+              <rect x="13.5" y="11" width="7" height="9.5" rx="1.6" />
+              <rect x="3.5" y="13.5" width="7" height="7" rx="1.6" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section id="currentCard" class="current" hidden>
+        <div class="current-top">
+          <span class="live-dot"></span>
+          <span class="current-label" id="curLabel">На этой странице</span>
+          <span id="curBadge" class="badge" hidden></span>
+        </div>
+        <div class="current-body">
+          <img id="curImg" class="current-img" alt="" />
+          <div class="current-main">
+            <div class="current-title" id="curTitle"></div>
+            <div class="current-price-row">
+              <span class="current-price" id="curPrice"></span>
+              <span class="current-delta" id="curDelta" hidden></span>
+            </div>
+          </div>
+          <button id="curAction" class="btn primary small">Добавить</button>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <div class="section-title">Избранное <span id="count" class="pill">0</span></div>
+        <button id="addUrlBtn" class="link-btn">+ по ссылке</button>
+      </div>
+
+      <div class="add-url" id="addUrlRow" hidden>
+        <input id="urlInput" type="text" placeholder="Ссылка на товар Ozon, WB, ЗЯ или Летуаль" spellcheck="false" autocomplete="off" />
+        <button id="urlAddBtn" class="btn primary small">Добавить</button>
+      </div>
+
+      <main id="list" class="list" aria-live="polite"></main>
+
+      <footer class="foot">
+        <span id="statusText" class="muted">—</span>
+        <button id="settingsBtn" class="link-btn">Настройки</button>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
